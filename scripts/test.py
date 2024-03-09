@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 import os 
 import sys
-from typedef import *
-from ctypes import *
 import time
+import platform
 import keyboard
+
+from ctypes import cdll
+
+from typedef import c
 
 def motor_init(id, mode, T, W, Pos, K_P, K_W):
     motor = MOTOR_send()

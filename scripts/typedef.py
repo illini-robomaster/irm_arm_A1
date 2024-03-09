@@ -1,26 +1,35 @@
 #!/usr/bin/env python3
 import os
-# import typedef
-from ctypes import *
-import platform
 import sys
+import ctypes
+import platform
 
-system=platform.system()
+from ctypes import cdll, Union, Structure, POINTER, \
+                   c_int, \
+                   c_int8, c_uint8, \
+                   c_int16, c_uint16, \
+                   c_int32, c_uint32, \
+                   c_float, \
+                   c_char, \
+                   c_ubyte, \
+                   c_longlong, c_ushort
+
+system = platform.system()
 
 if system == 'Windows':
-    libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_Win64.dll'
+    libPath = 'lib/libUnitree_motor_SDK_Win64.dll'
 elif system == 'Linux' and platform.uname()[4] == 'x86_64':
     maxbit=sys.maxsize
     if maxbit>2**32:
-        libPath = os.path.dirname(os.getcwd()) + "/lib/libUnitree_motor_SDK_Linux64.so"
+        libPath = 'lib/libUnitree_motor_SDK_Linux64.so'
     else:
-        libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_Linux32.so'
+        libPath = 'lib/libUnitree_motor_SDK_Linux32.so'
 elif system == 'Linux' and platform.uname()[4] == 'aarch64':
     maxbit=sys.maxsize
     if maxbit>2**32:
-        libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_ARM64.so'
+        libPath = 'lib/libUnitree_motor_SDK_ARM64.so'
     else:
-        libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_ARM32.so'
+        libPath = 'lib/libUnitree_motor_SDK_ARM32.so'
 
 c = cdll.LoadLibrary(libPath)
 

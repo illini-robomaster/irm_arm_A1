@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 import os 
 import sys
-from typedef import *
-from ctypes import *
 import time
+import platform
+
+from ctypes import cdll
+
+from typedef import c
 
 def motor_init(id, mode, T, W, Pos, K_P, K_W):
     motor = MOTOR_send()
@@ -26,15 +29,15 @@ def read_receive_pos(receive):
 system=platform.system()
 if system == 'Windows':
     fd = c.open_set(b'\\\\.\\COM3')
-    libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_Win64.dll'
+    libPath = 'lib/libUnitree_motor_SDK_Win64.dll'
 elif system == 'Linux':
     fd = c.open_set(b'/dev/ttyUSB0')
     maxbit=sys.maxsize
     if maxbit>2**32:
-        libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_Linux64.so'
+        libPath = 'lib/libUnitree_motor_SDK_Linux64.so'
         print('Linux 64 bits')
     else:
-        libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_Linux32.so'
+        libPath = 'lib/libUnitree_motor_SDK_Linux32.so'
         print('Linux 32 bits')
 
 c = cdll.LoadLibrary(libPath)
