@@ -4,9 +4,9 @@ import sys
 import time
 import platform
 
-from ctypes import cdll
+from ctypes import cdll, byref
 
-from typedef import c
+from typedef import c, MOTOR_send, MOTOR_recv
 
 def motor_init(id, mode, T, W, Pos, K_P, K_W):
     motor = MOTOR_send()
@@ -26,19 +26,45 @@ def read_receive_pos(receive):
     c.extract_data(byref(receive))
     return receive.Pos
 
-system=platform.system()
+system = platform.system()
 if system == 'Windows':
     fd = c.open_set(b'\\\\.\\COM3')
     libPath = 'lib/libUnitree_motor_SDK_Win64.dll'
 elif system == 'Linux':
-    fd = c.open_set(b'/dev/ttyUSB0')
+    SERIAL_PREFIX = "usb-FTDI_USB__-__Serial_Converter_"
+    dev_basename = "/dev/serial/by-id"
+    try:
+        path_list = os.listdir(dev_basename)
+    except FileNotFoundError:  # Nothing connected
+        path_list = []
+
+    dev_paths = (
+        os.path.join(dev_basename, path)
+        for path in path_list
+        if path.startswith(SERIAL_PREFIX)
+    )
+
+    try:
+        selected_path = next(dev_paths)
+    except StopIteration:
+        selected_path = ""
+
+    fd = c.open_set(bytes(selected_path, "utf8"))
     maxbit=sys.maxsize
-    if maxbit>2**32:
-        libPath = 'lib/libUnitree_motor_SDK_Linux64.so'
-        print('Linux 64 bits')
-    else:
-        libPath = 'lib/libUnitree_motor_SDK_Linux32.so'
-        print('Linux 32 bits')
+    if platform.uname()[4] == "x86_64":
+        if maxbit > 2**32:
+            libPath = "lib/libUnitree_motor_SDK_Linux64.so"
+            print("Linux 64 bits")
+        else:
+            libPath = "lib/libUnitree_motor_SDK_Linux32.so"
+            print("Linux 32 bits")
+    elif platform.uname()[4] == "aarch64":
+        if maxbit > 2**32:
+            libPath = "lib/libUnitree_motor_SDK_ARM64.so"
+            print("ARM 64 bits")
+        else:
+            libPath = "lib/libUnitree_motor_SDK_ARM32.so"
+            print("ARM 32 bits")
 
 c = cdll.LoadLibrary(libPath)
 K_P = 0.1   # Kp
