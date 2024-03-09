@@ -1,0 +1,15 @@
+# Build and distribution
+build/
+dist/
+
+# Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.idea
+.env
+.venv
+env/
+venv/
