@@ -1,86 +1,77 @@
 #!/usr/bin/env python3
-import os 
-import sys
 import time
-import platform
 import keyboard
 
 from ctypes import cdll
 
-from typedef import c
+import utils
+from utils import Types as T
 
-def motor_init(id, mode, T, W, Pos, K_P, K_W):
-    motor = MOTOR_send()
+def motor_init(id, mode, trq, W, Pos, K_P, K_W):
+    motor = T.MOTOR_send()
     motor.id = id       # Motor id
     motor.mode = mode   # Mode: 0 is stop, 5 is open-loop slow rotation, 10 is close-loop control
-    motor.T = T         # Feedforward torque
+    motor.trq = trq     # Feedforward torque
     motor.W = W         # Angular velocity
     motor.Pos = Pos     # Angle position
     motor.K_P = K_P     # kp parameter in PID
     motor.K_W = K_W     # kd parameter in PID
     return motor
 
-def motor_send(fd, send, receive):
-    c.send_recv(fd, byref(send), byref(receive))
+def main():
+    fd = utils.c.open_set(utils.bport)
+    c = utils.c_init_bare(utils.so)
 
-def read_receive_pos(receive):
-    c.extract_data(byref(receive))
-    return receive.Pos
+    motor0_s = motor_init(id=0, mode=10, trq=0.0, W=0.0, Pos=0, K_P=0, K_W=2)
+    motor0_r = T.MOTOR_recv()
 
-system=platform.system()
-if system == 'Windows':
-    fd = c.open_set(b'\\\\.\\COM3')
-    libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_Win64.dll'
-elif system == 'Linux':
-    fd = c.open_set(b'/dev/ttyUSB0')
-    maxbit=sys.maxsize
-    if maxbit>2**32:
-        libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_Linux64.so'
-        print('Linux 64 bits')
-    else:
-        libPath = os.path.dirname(os.getcwd()) + '/lib/libUnitree_motor_SDK_Linux32.so'
-        print('Linux 32 bits')
+    const = 2 * 0.314 * 9.1
+    print('START')
+    print('r -> Exit')
+    print('p -> Pause')
+    print('c -> Continue')
+    print('w -> Forward')
+    print('s -> Backward')
+    try:
+        freq = 1 / 200
+        paused = False
+        while True:
+            if keyboard.is_pressed('r'):
+                break
+            # Pause.
+            elif keyboard.is_pressed('p'):
+                motor0_s.mode = 0
+                paused = True
+            # Continue.
+            elif keyboard.is_pressed('c'):
+                motor0_s.mode = 10
+                paused = False
+            if paused:
+                continue
 
-c = cdll.LoadLibrary(libPath)
+            if keyboard.is_pressed('w'):
+                # position = motor0_s.Pos + Delta_position
+                # motor0_s.Pos = position
+                motor0_s.W = const
+            elif(keyboard.is_pressed('s')):
+                motor0_s.W = -const
+            else:
+                motor0_s.W = 0.0
 
-K_P = 0   # Kp
-K_W = 2     # Kd
+            if motor0_s.W != 0:
+                print('Current position:', motor0_s.Pos)
+            c.modify_data(T.byref(motor0_s))
+            c.send_recv(fd, T.byref(motor0_s), T.byref(motor0_r))
+            # receieve
+            c.extract_data(T.byref(motor0_r))
 
-# initilization
-motor0_s = motor_init(id=0, mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
-motor0_r = MOTOR_recv()
-
-# reset to 0 position
-print('START')
-stop = False
-while(True):
-    # send
-    if (keyboard.is_pressed('r')):
-        break
-    elif (keyboard.is_pressed("p") or stop == True):
+            time.sleep(freq)
+    finally:
         motor0_s.mode = 0
-        stop = True
-        if (keyboard.is_pressed('c')):
-            motor0_s.mode = 10
-            stop = False
-    else:
-        if (keyboard.is_pressed("w")):
-            # position = motor0_s.Pos + Delta_position
-            # motor0_s.Pos = position
-            motor0_s.W = 2 * 0.314*9.1
-        elif(keyboard.is_pressed("s")):
-            motor0_s.W = -2 * 0.314*9.1
-        else:
-            motor0_s.W = 0.0
+        c.modify_data(T.byref(motor0_s))
+        c.send_recv(fd, T.byref(motor0_s), T.byref(motor0_r))
+        c.close_serial(fd)
+        print('END')
 
-    print(motor0_s.Pos)
-    c.modify_data(byref(motor0_s))
-    c.send_recv(fd, byref(motor0_s), byref(motor0_r))
-    # receieve
-    c.extract_data(byref(motor0_r))
-    time.sleep(0.005)
-
-motor0_s.mode = 0
-c.modify_data(byref(motor0_s))
-c.send_recv(fd, byref(motor0_s), byref(motor0_r))
-c.close_serial(fd)
+if __name__ == '__main__':
+    main()
