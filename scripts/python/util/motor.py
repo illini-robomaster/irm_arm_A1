@@ -41,14 +41,15 @@ class Motor:
         state['K_P'] = motor.K_P
         state['K_W'] = motor.K_W
 
-    def set_state_send(self, new_state):
-        # [s]elf [k]eys
+    def set_state_send(self, **new_state):
+        # [s]elf [k]eys, [n]ew $_, [e]xisting $_
         sk_set = set(self.state)
-        # [n]ew --
         nk_set = set(new_state)
+
         existing_keys = sk_set | (sk_set & nk_set)
-        for k in existing_keys:
-            self.state[k] = new_state['k']
+        self.state |= {k: v
+                       for k, v in new_state.items()
+                       if k in existing_keys}
         self.update_motor_from_state(self.motor_send, self.state_send)
 
     def send(self):
@@ -71,6 +72,5 @@ class Motor:
         id_ = self.state_send.id
         new_state = dict.fromkeys(self.state_send, 0)
         new_state['id'] = id_
-        self.set_state(new_state)
+        self.set_state_send(**new_state)
         self.send()
-

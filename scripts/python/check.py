@@ -11,11 +11,15 @@ def main():
         K_P = 0.1   # Kp
         K_W = 5     # Kd
         # Initialize motors
-        motor0 = Motor(cdll, fd, id_=0, mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
-        motor1 = Motor(cdll, fd, id_=0, mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
-        motor2 = Motor(cdll, fd, id_=0, mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
-        # Set motors to their starting positions.
+        motor0 = Motor(cdll, fd, id_=0,
+                       mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
+        motor1 = Motor(cdll, fd, id_=0,
+                       mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
+        motor2 = Motor(cdll, fd, id_=0,
+                       mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
         motors = [motor0, motor1, motor2]
+
+        # Set motors to their starting positions.
         for motor in motors:
             motor.send()
         time.sleep(2)
@@ -24,7 +28,7 @@ def main():
         # Set motors to a new position
         new_position = {'Pos': 3.14 * 9.1 / 2}
         for motor in motors:
-            motor.set_state_send(new_position)
+            motor.set_state_send(**new_position)
             motor.send()
         time.sleep(5)
 

@@ -33,24 +33,24 @@ def main():
             # Pause.
             elif keyboard.is_pressed('p'):
                 for motor in motors:
-                    motor.set_state_send({'mode': 0})
+                    motor.set_state_send(mode=0)
                 paused = True
             # Continue.
             elif keyboard.is_pressed('c'):
                 for motor in motors:
-                    motor.set_state_send({'mode': 10})
+                    motor.set_state_send(mode=10)
                 paused = False
             elif paused:
                 continue
 
             # large arm motor forward
             if keyboard.is_pressed('w'):
-                motor.set_state_send({'W': MOTOR0_SPEED})
+                motor.set_state_send(W=MOTOR0_SPEED)
             # large arm motor backward
             elif keyboard.is_pressed('s'):
-                motor.set_state_send({'W': -MOTOR0_SPEED})
+                motor.set_state_send(W=-MOTOR0_SPEED)
             else:
-                motor.set_state_send({'W': 0, 'K_W': 20})
+                motor.set_state_send(W=0, K_W=20)
 
             if motor.motor_send.W != 0:
                 print('Current position:', motor.get_state_send['Pos'])
@@ -59,7 +59,7 @@ def main():
 
             time.sleep(freq)
     finally:
-        motor.set_state_send({'mode': 0})
+        motor.set_state_send(mode=0)
         motor.send()
         cdll.close_serial(fd)
         print('END')

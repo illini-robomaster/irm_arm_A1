@@ -1,8 +1,36 @@
+# Illinois RoboMaster 2024
+import os
 import platform
+
+from zipfile import ZipFile
+from tempfile import TemporaryDirectory
+
+import DISTINFO
 
 from util.typedef import Types as T
 
-def get_so():
+# Access libraries in zipped context
+ZIP_CONTEXT = DISTINFO.DIST
+
+class ZipContextLibHandler(TemporaryDirectory):
+    def __init__(self, zip_path, zipped_path):
+        super().__init__()
+        self.zip_path = zip_path
+        self.zipped_path = zipped_path
+
+        self.cwd = os.getcwd()
+
+    def __enter__(self):
+        super().__enter__()
+        os.chdir(self.name)
+        with ZipFile(self.zip_path) as z:
+            z.extract(self.zipped_path, '.')
+
+    def __exit__(self, *args):
+        os.chdir(self.cwd)
+        super().__exit__(*args)
+
+def get_so_path():
     so_path = 'lib/libUnitree_motor_SDK_%s.so'
 
     uname = platform.uname()
@@ -29,11 +57,17 @@ def get_so():
 
     return so_path % ''.join(tup)
 
-def cdll_bare_init(so):
-    return T.cdll.LoadLibrary(so)
+def cdll_bare_init(so_path):
+    if DISTINFO.DIST:
+        with ZipContextLibHandler(DISTINFO.ROOT_DIR, so_path):
+            cdll = T.cdll.LoadLibrary(so_path)
+    else:
+        cdll = T.cdll.LoadLibrary(so_path)
 
-def cdll_init(so):
-    cdll = cdll_bare_init(so)
+    return cdll
+
+def cdll_init(so_path):
+    cdll = cdll_bare_init(so_path)
 
     # motor_ctrl.h
     cdll.getSystemTime.restype = T.c_longlong
