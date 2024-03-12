@@ -1,7 +1,9 @@
+# Illinois RoboMaster 2024
 import os
 import platform
 
 def get_port(bytes_=False):
+    """Searches for possible ports and returns the first one found"""
     not_found = 'Cannot open serial: device not attatched.'
     system = platform.system()
 

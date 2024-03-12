@@ -48,6 +48,7 @@ class MOTOR_recv(Structure):
         ("Pos", c_float), ("gyro", c_float*3), ("acc", c_float*3)]
 
 class Types:
+    """Bare class of used types"""
     COMData32 = COMData32
     COMHead = COMHead
     MasterComdDataV3 = MasterComdDataV3

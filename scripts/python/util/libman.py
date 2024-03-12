@@ -13,6 +13,7 @@ from util.typedef import Types as T
 ZIP_CONTEXT = DISTINFO.DIST
 
 class ZipContextLibHandler(TemporaryDirectory):
+    """Extracts a specified file into a temporary location and sets cwd"""
     def __init__(self, zip_path, zipped_path):
         super().__init__()
         self.zip_path = zip_path
@@ -21,16 +22,21 @@ class ZipContextLibHandler(TemporaryDirectory):
         self.cwd = os.getcwd()
 
     def __enter__(self):
+        """See TemporaryDirectory.__enter__()
+        Sets cwd and extracts contents to the temporary directory"""
         super().__enter__()
         os.chdir(self.name)
         with ZipFile(self.zip_path) as z:
             z.extract(self.zipped_path, '.')
 
     def __exit__(self, *args):
+        """See TemporaryDirectory.__exit__()
+        Returns to previous directory and cleans up the temporary directory"""
         os.chdir(self.cwd)
         super().__exit__(*args)
 
 def get_so_path():
+    """Returns the Unitree library based on uname"""
     so_path = 'lib/libUnitree_motor_SDK_%s.so'
 
     uname = platform.uname()
@@ -58,6 +64,8 @@ def get_so_path():
     return so_path % ''.join(tup)
 
 def cdll_bare_init(so_path):
+    """Returns a ctypes.cdll object from a shared object path
+    Functions in zipped context"""
     if DISTINFO.DIST:
         with ZipContextLibHandler(DISTINFO.ROOT_DIR, so_path):
             cdll = T.cdll.LoadLibrary(so_path)
@@ -67,6 +75,8 @@ def cdll_bare_init(so_path):
     return cdll
 
 def cdll_init(so_path):
+    """Returns a ctypes.cdll from a shared object path
+    Initializes it with presets"""
     cdll = cdll_bare_init(so_path)
 
     # motor_ctrl.h
