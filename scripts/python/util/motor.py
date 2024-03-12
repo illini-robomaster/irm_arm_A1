@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-from .typedef import Types
+from util.typedef import Types
 
 class Motor:
     """Wrapper for MOTOR_{send,recv}"""

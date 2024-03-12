@@ -16,11 +16,11 @@ ZIP_CONTEXT = DISTINFO.DIST
 
 class _ZipContextLibHandler(TemporaryDirectory):
     def __init__(self, zip_path, zipped_path, zip_context):
-        if zip_context:
+        self.zip_context = zip_context
+        if self.zip_context:
             super().__init__()
             self.zip_path = zip_path
             self.zipped_path = zipped_path
-            self.zip_context = zip_context
 
             self.cwd = os.getcwd()
 

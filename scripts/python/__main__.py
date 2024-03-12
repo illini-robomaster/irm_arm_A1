@@ -2,6 +2,7 @@
 import argparse
 
 from test import main as main_test
+from check import main as main_check
 from multitest import main as main_multitest
 from arm_movement import main as main_arm_movement
 
@@ -14,10 +15,15 @@ def main_parser():
     subparsers = ap.add_subparsers(title='action')
     subparsers.required = True
 
+    sp_check = subparsers.add_parser('check', parents=[pp], epilog='test')
+    sp_check.set_defaults(main=main_check)
+
     sp_test = subparsers.add_parser('test', parents=[pp], epilog='test')
     sp_test.set_defaults(main=main_test)
+
     sp_multitest = subparsers.add_parser('multitest', parents=[pp], epilog='multitest')
     sp_multitest.set_defaults(main=main_multitest)
+
     sp_arm_movement = subparsers.add_parser('arm_movement', parents=[pp], epilog='arm_movement')
     sp_arm_movement.set_defaults(main=main_arm_movement)
 

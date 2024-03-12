@@ -1,9 +1,3 @@
-<<<<<<<< HEAD:scripts/python/util/typedef.py
-========
-import os
-import sys
-
->>>>>>>> 8755b0f (Refactor and package):scripts/utils/typedef.py
 from ctypes import *
 
 class COMData32(Union):
@@ -77,7 +71,4 @@ class Types:
     c_ubyte = c_ubyte
     c_longlong = c_longlong
     c_ushort = c_ushort
-<<<<<<<< HEAD:scripts/python/util/typedef.py
     cdll = cdll
-========
->>>>>>>> 8755b0f (Refactor and package):scripts/utils/typedef.py
