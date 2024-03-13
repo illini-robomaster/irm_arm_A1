@@ -32,13 +32,11 @@ def main():
                 break
             # Pause.
             elif keyboard.is_pressed('p'):
-                for motor in motors:
-                    motor.set_state_send(mode=0)
+                motor.set_state_send(mode=0)
                 paused = True
             # Continue.
             elif keyboard.is_pressed('c'):
-                for motor in motors:
-                    motor.set_state_send(mode=10)
+                motor.set_state_send(mode=10)
                 paused = False
             elif paused:
                 continue

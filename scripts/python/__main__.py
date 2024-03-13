@@ -10,21 +10,21 @@ def main_parser():
     # Default parent parser.
     # If arguments are needed, import parent from module.
     pp = argparse.ArgumentParser(add_help=False)
-    ap = argparse.ArgumentParser(description=':)')
+    ap = argparse.ArgumentParser(description='Collection of python scripts')
 
     subparsers = ap.add_subparsers(title='action')
     subparsers.required = True
 
-    sp_check = subparsers.add_parser('check', parents=[pp], epilog='test')
+    sp_check = subparsers.add_parser('check', parents=[pp], epilog='Run check')
     sp_check.set_defaults(main=main_check)
 
-    sp_test = subparsers.add_parser('test', parents=[pp], epilog='test')
+    sp_test = subparsers.add_parser('test', parents=[pp], epilog='Run test')
     sp_test.set_defaults(main=main_test)
 
-    sp_multitest = subparsers.add_parser('multitest', parents=[pp], epilog='multitest')
+    sp_multitest = subparsers.add_parser('multitest', parents=[pp], epilog='Run multitest')
     sp_multitest.set_defaults(main=main_multitest)
 
-    sp_arm_movement = subparsers.add_parser('arm_movement', parents=[pp], epilog='arm_movement')
+    sp_arm_movement = subparsers.add_parser('arm_movement', parents=[pp], epilog='Run arm_movement')
     sp_arm_movement.set_defaults(main=main_arm_movement)
 
     return ap

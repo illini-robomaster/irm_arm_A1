@@ -13,14 +13,11 @@ def main():
     K_W = 15    # Kd in position mode and Kp in velocity moode
 
     # initilization
-    motor0 = Motor(cdll=cdll, fd=fd, id_=0,
-                   mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
-    motor1 = Motor(cdll=cdll, fd=fd, id_=1,
-                   mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
-    motor2 = Motor(cdll=cdll, fd=fd, id_=2,
-                   mode=10, T=0.0, W=0.0, Pos=0, K_P=K_P, K_W=K_W)
-
-    motors = [motor0, motor1, motor2]
+    motors = [Motor(cdll=cdll, fd=fd, id_=i,
+                    mode=10, T=0.0, W=0.0, Pos=0,
+                    K_P=K_P, K_W=K_W)
+              for i in range(3)]
+    motor0, motor1, motor2 = motors
 
     const = 2 * 0.314 * 9.1  # 9.1 is a ratio to consider
     MOTOR0_SPEED = const
