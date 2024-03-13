@@ -3,18 +3,19 @@ This library is used for the communication between PC and the motor control boar
 
 # Dependencies
 * [CMake](http://www.cmake.org) (version 2.8.3 or higher)
+* [keyboard](https://pypi.org/project/keyboard) (patch tested on version 0.13.5)
   
 # Files
-## /lib
+## lib/
 Including the library files of Linux and Windows separately. If you wish to use the SDK under ARM32/64, please modify the CMakeList manually to select the correst `.so` file.
-## /include
+## include/
 Including the header files. Where ```LSerial.h``` contains the declarations of serial port operation functions. The ```motor_msg.h``` contains the command structure for motor communication. The ```motor_ctrl.h``` contains the encoding and decoding functions.
-## /src
+## src/
 Including the example source files of C and C++. The example can control motors to run under desired command for desired time, and then stop. Please watch out that only the check.c is the full control example with all functions. check.cpp and also the Python example do not contain some comments and important tutorials.
-## /script
+## scripts/
+Contains bash scripts which handle patching and distribution.
+## scripts/python/
 Including the example source files of Python. This example's function is same with the C/C++ example. The ```typedef.py``` declares the data structure of all library functions and structures in Python style, so that the ```check.py``` can call the library correctly.
-## /unitree_motor_ctrl
-It is a package of ROS and the library file is just the library file of Linux.
 
 # Usage
 ## C/C++ under Liunx
@@ -30,19 +31,22 @@ make
 - Ubuntu: `sudo usermod -aG dialout $USER`
 - Arch: `sudo usermod -aG uucp`
 ```
-cd ../dist
-./check_c
-```
-and
-```
-cd ../dist
-./check_cpp
+cd ..
+dist/check_c
+dist/check_cpp
 ```
 ## Python under Linux
+### Generate executable
 ```
-python3 scripts/check.py
+scripts/distribute.sh
 ```
-
+### Run executable
+```
+dist/pyscripts --help
+```
+Avoid running the scripts as root.
+Under a virtual environment with the `keyboard` package, follow the instructions of `scripts/patch_keyboard_module.sh`.
+Do not forget to log out and log back in after group changes.
 ## C/C++ under ROS
 ### Build
 Under the catkin workspace, run:
