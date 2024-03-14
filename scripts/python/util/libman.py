@@ -53,7 +53,7 @@ def get_so_path():
         elif machine.endswith('86'):
             tup = ('Linux', '32')
         # aarch32/64
-        elif uname.machine.startswith('aarch'):
+        elif machine.startswith('aarch'):
             tup = ('ARM', machine[:-2])
         # Likely unsupported
         else:
@@ -75,8 +75,7 @@ def cdll_bare_init(so_path):
     return cdll
 
 def cdll_init(so_path):
-    """Returns a ctypes.cdll from a shared object path
-    Initializes it with presets"""
+    """Returns a ctypes.cdll from a shared object path initialized with presets"""
     cdll = cdll_bare_init(so_path)
 
     # motor_ctrl.h

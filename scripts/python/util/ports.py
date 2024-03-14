@@ -4,7 +4,7 @@ import platform
 
 def get_port(bytes_=False):
     """Searches for possible ports and returns the first one found"""
-    not_found = 'Cannot open serial: device not attatched.'
+    NOT_FOUND_MESG = 'Cannot open serial: device not attatched.'
     system = platform.system()
 
     if system == 'Windows':
@@ -15,7 +15,7 @@ def get_port(bytes_=False):
         try:
             path_list = os.listdir(dev_basename)
         except FileNotFoundError as e:  # Nothing connected
-            raise RuntimeError(not_found) from e
+            raise RuntimeError(NOT_FOUND_MESG) from e
 
         dev_paths = (os.path.join(dev_basename, path)
                      for path in path_list
@@ -23,7 +23,7 @@ def get_port(bytes_=False):
         try:
             selected_path = next(dev_paths)
         except StopIteration as e:  # Nothing found
-            raise RuntimeError(not_found) from e
+            raise RuntimeError(NOT_FOUND_MESG) from e
 
     else:
         raise RuntimeError(f'{system} not supported.')

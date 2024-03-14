@@ -82,7 +82,7 @@ def main():
                 motor2.set_state_send(W=0, K_W=20)
 
             # No output if all 0s
-            if any(motor.get_state_send['W'] for motor in motors):
+            if any(motor.get_state_send()['W'] for motor in motors):
                 for motor in motors:
                     state_send = motor.get_state_send()
                     print('Current position of %s: %s' %

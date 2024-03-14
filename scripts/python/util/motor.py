@@ -47,7 +47,7 @@ class Motor:
 
     def set_state_send(self, **new_state):
         """Set the state_send dictionary and update MOTOR_send"""
-        # [s]elf [k]eys, [n]ew $_, [e]xisting $_
+        # [s]elf [k]eys, [n]ew ...
         sk_set = set(self.state)
         nk_set = set(new_state)
 
@@ -60,8 +60,8 @@ class Motor:
     def send(self):
         """Send the current MOTOR_send to fd"""
         self.cdll.modify_data(Types.byref(self.motor_send))
-        self.cdll.send_recv(self.fd, Types.byref(self.motor_send),
-                                     Types.byref(self.motor_recv))
+        self.cdll.send_recv(self.fd,
+            Types.byref(self.motor_send), Types.byref(self.motor_recv))
 
     def recv(self):
         """Update state_recv from current MOTOR_recv"""
