@@ -31,7 +31,8 @@ class ZipContextLibHandler(TemporaryDirectory):
 
     def __exit__(self, *args):
         """See TemporaryDirectory.__exit__()
-        Returns to previous directory and cleans up the temporary directory"""
+        Returns to previous directory and cleans up the temporary directory
+        """
         os.chdir(self.cwd)
         super().__exit__(*args)
 
@@ -65,7 +66,8 @@ def get_so_path():
 
 def cdll_bare_init(so_path):
     """Returns a ctypes.cdll object from a shared object path
-    Functions in zipped context"""
+    Functions in zipped context
+    """
     if DISTINFO.DIST:
         with ZipContextLibHandler(DISTINFO.ROOT_DIR, so_path):
             cdll = T.cdll.LoadLibrary(so_path)

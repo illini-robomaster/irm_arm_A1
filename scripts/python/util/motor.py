@@ -68,13 +68,33 @@ class Motor:
         self.cdll.extract_data(Types.byref(self.motor_recv))
         self.update_state_from_motor(self.motor_recv, self.state_recv)
 
-    def get_state_send(self):
-        """Return a shallow copy of state_send"""
-        return self.state_send.copy()
+    def get_state_send(self, *keys):
+        """Return a shallow copy of state_send if no keys are provided
+        Return the value corresponding to the key if one key provided
+        Return a list of values if multiple keys are provided
+        """
+        if not keys:
+            ret = self.state_send.copy()
+        elif len(keys) == 1:
+            ret = self.state_send[keys[0]]
+        else:
+            ret = [self.state_send[k]
+                   for k in keys]
+        return ret
 
-    def get_state_recv(self):
-        """Return a shallow copy of state_recv"""
-        return self.state_recv.copy()
+    def get_state_recv(self, *keys):
+        """Return a shallow copy of state_recv if no keys are provided
+        Return the value corresponding to the key if one key provided
+        Return a list of values if multiple keys are provided
+        """
+        if not keys:
+            ret = self.state_recv.copy()
+        elif len(keys) == 1:
+            ret = self.state_recv[keys[0]]
+        else:
+            ret = [self.state_recv[k]
+                   for k in keys]
+        return ret
 
     def stop(self):
         """Reset everything but id to 0"""

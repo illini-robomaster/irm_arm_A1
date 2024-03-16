@@ -51,7 +51,7 @@ def main():
                 motor.set_state_send(W=0, K_W=20)
 
             if motor.motor_send.W != 0:
-                print('Current position:', motor.get_state_send['Pos'])
+                print('Current position:', motor.get_state_send('Pos'))
             # send out struct command to motor
             motor.send()
 

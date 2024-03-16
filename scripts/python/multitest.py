@@ -9,8 +9,8 @@ def main():
     fd = util.cdll.open_set(util.bport)
     cdll = util.cdll_bare
 
-    K_P = 0     # Kp in position mode, set to zero for velocity mode
-    K_W = 15    # Kd in position mode and Kp in velocity moode
+    K_P = 0   # Kp in position mode, set to zero for velocity mode
+    K_W = 15  # Kd in position mode and Kp in velocity moode
 
     # initilization
     motors = [Motor(cdll=cdll, fd=fd, id_=i,
@@ -82,11 +82,10 @@ def main():
                 motor2.set_state_send(W=0, K_W=20)
 
             # No output if all 0s
-            if any(motor.get_state_send()['W'] for motor in motors):
+            if any(motor.get_state_send('W') for motor in motors):
                 for motor in motors:
-                    state_send = motor.get_state_send()
-                    print('Current position of %s: %s' %
-                          (state_send['id'], state_send['Pos']))
+                    _id, _Pos = motor.get_state_send('id', 'Pos')
+                    print('Current position of %s: %s' % (_id, _Pos))
             # send out struct command to motors
             for motor in motors:
                 motor.send()
