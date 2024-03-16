@@ -10,7 +10,12 @@ def main_parser():
     # Default parent parser.
     # If arguments are needed, import parent from module.
     pp = argparse.ArgumentParser(add_help=False)
-    ap = argparse.ArgumentParser(description='Collection of python scripts')
+    ap = argparse.ArgumentParser(
+            description='Collection of python scripts',
+            prog='pyscripts')
+    ap.add_argument('-v', '--version',
+                    action='version',
+                    version='%(prog)s v1.14.5.14')
 
     subparsers = ap.add_subparsers(title='action')
     subparsers.required = True

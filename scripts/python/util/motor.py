@@ -3,8 +3,10 @@ from util.typedef import Types
 
 class Motor:
     """Wrapper for MOTOR_{send,recv}"""
-    def __init__(self, cdll, fd, id_, mode, T, W, Pos, K_P, K_W):
-        self.cdll = cdll  # cdll
+    def __init__(self, cdll, fd,
+                 id_=0, mode=0,
+                 T=0.0, W=0.0, Pos=0.0, K_P=0.0, K_W=0.0):
+        self.cdll = cdll
         self.fd = fd
 
         self.motor_send = Types.MOTOR_send()
@@ -18,32 +20,60 @@ class Motor:
             'K_P': K_P,   # kp parameter in PID
             'K_W': K_W,   # kd parameter in PID
         }
-        self.state_recv = dict.fromkeys(self.state_send, 0.0)
+        self.state_recv = dict.fromkeys(self.state_send)  # Populate with None
 
         self.update_motor_from_state(self.motor_send, self.state_send)
         self.update_state_from_motor(self.motor_recv, self.state_recv)
 
     @staticmethod
     def update_motor_from_state(motor, state):
-        """Update a MOTOR_* object from a state dict"""
-        motor.id = state['id']
-        motor.mode = state['mode']
-        motor.T = state['T']
-        motor.W = state['W']
-        motor.Pos = state['Pos']
-        motor.K_P = state['K_P']
-        motor.K_W = state['K_W']
+        """Update a typedef.Types.MOTOR_{send,recv} object from a state dict
+        Expected bindings for typedef.Types.MOTOR_send instance:
+        - K_P       :: float
+        - K_W       :: float
+        - Pos       :: float
+        - T         :: float
+        - W         :: float
+        - id        :: int
+        - mode      :: int
+        It is unnessecary (and unexpected) to provide:
+        - hex_len   :: int
+        - motor_send_data
+                    :: typedef.Types.MasterComdDataV3
+        - send_time :: int
+        These will be automatically generated in Motor(...).set_state_send(...)
+        help(motor.Motor.update_state_from_motor) for typedef.Types.MOTOR_recv
+        """
+        for key in state:
+            setattr(motor, key, state[key])
 
     @staticmethod
     def update_state_from_motor(motor, state):
-        """Update a state dict from a MOTOR_* object"""
-        state['id'] = motor.id
-        state['mode'] = motor.mode
-        state['T'] = motor.T
-        state['W'] = motor.W
-        state['Pos'] = motor.Pos
-        state['K_P'] = motor.K_P
-        state['K_W'] = motor.K_W
+        """Update a state dict from a typedef.Types.MOTOR_{send,recv} object
+        Expected bindings for typedef.Types.MOTOR_recv instance:
+        - Acc       :: int
+        - LW        :: float
+        - MError    :: int
+        - Pos       :: float
+        - T         :: float
+        - Temp      :: int
+        - W         :: float
+        - acc       :: typedef.Types.c_float_Array_3
+        - correct   :: int
+        - gyro      :: typedef.Types.c_float_Array_3
+        - hex_len   :: int
+        - mode      :: int
+        - motor_id  :: int
+        - motor_recv_data
+                    :: typedef.Types.ServoComdDataV3
+        - recv_time :: int
+        Keys not specified here will not experience side effects
+        help(motor.Motor.update_motor_from_state) for typedef.Types.MOTOR_send
+        """
+        new_state = {attr: getattr(motor, attr)
+                     for attr in dir(motor)
+                     if not attr.startswith('_')}
+        state |= new_state
 
     def set_state_send(self, **new_state):
         """Set the state_send dictionary and update MOTOR_send"""
@@ -56,10 +86,11 @@ class Motor:
                        for k, v in new_state.items()
                        if k in existing_keys}
         self.update_motor_from_state(self.motor_send, self.state_send)
+        # Update motor_send.{hex_len,motor_send_data}
+        self.cdll.modify_data(Types.byref(self.motor_send))
 
     def send(self):
         """Send the current MOTOR_send to fd"""
-        self.cdll.modify_data(Types.byref(self.motor_send))
         self.cdll.send_recv(self.fd,
             Types.byref(self.motor_send), Types.byref(self.motor_recv))
 
