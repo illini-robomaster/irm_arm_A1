@@ -41,8 +41,6 @@ mkdir -p "${BUILDDIR}" "${OUTDIR}"
     # Apply patches.
     echo ::: Apply patches
     "${script_dir}"/patch_keyboard_module.sh -n -e venv/bin/activate
-    # Delete patch backups
-    find . -type f -not -path "./${venv}/*" -name "*.orig" -exec rm -rvf {} \;
 
     # Delete the venv.
     echo ::: Delete ${venv}

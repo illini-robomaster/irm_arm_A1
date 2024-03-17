@@ -11,10 +11,11 @@ function usage ()
     Options:
     -h|help       Display this message
     -v|version    Display script version
+    -b            Create backup
     -n            Ignore failed checks
     -e <PATH>     Source <PATH>"
 }
-while getopts ":hvne:" opt
+while getopts ":hvne:b" opt
 do
     case $opt in
         h|help) 
@@ -23,6 +24,8 @@ do
         v|version)
             echo "$0 -- Version $__ScriptVersion";
             exit 0;;
+        b)
+            backup=-b;;
         n)
             no_fail=1;;
         e)
@@ -104,4 +107,4 @@ EOF
 FILE_PATH=$($python_exec -c 'import keyboard; print(keyboard.__file__)' | xargs dirname)/_nixcommon.py
 
 echo "${PATCH}"
-patch --verbose -b "${FILE_PATH}" -i <( echo "${PATCH}" )
+patch --verbose ${backup} "${FILE_PATH}" -i <( echo "${PATCH}" )
