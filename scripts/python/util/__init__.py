@@ -13,4 +13,3 @@ try:
     bport = get_port(bytes_=True)
 except:
     bport = None
-

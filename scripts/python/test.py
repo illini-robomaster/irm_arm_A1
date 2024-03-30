@@ -18,7 +18,6 @@ def main():
     MOTOR0_SPEED = const
 
     print('START')
-    print('START')
     print('r -> Exit')
     print('p -> Pause')
     print('c -> Continue')
@@ -40,7 +39,6 @@ def main():
                 paused = False
             elif paused:
                 continue
-
             # large arm motor forward
             if keyboard.is_pressed('w'):
                 motor.set_state_send(W=MOTOR0_SPEED)

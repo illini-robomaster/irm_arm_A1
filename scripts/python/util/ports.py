@@ -21,7 +21,7 @@ def get_port(bytes_=False):
                      for path in path_list
                      if path.startswith(SERIAL_PREFIX))
         try:
-            selected_path = next(dev_paths)
+            port = next(dev_paths)
         except StopIteration as e:  # Nothing found
             raise RuntimeError(NOT_FOUND_MESG) from e
 

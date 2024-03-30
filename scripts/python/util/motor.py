@@ -78,13 +78,11 @@ class Motor:
     def set_state_send(self, **new_state):
         """Set the state_send dictionary and update MOTOR_send"""
         # [s]elf [k]eys, [n]ew ...
-        sk_set = set(self.state)
+        sk_set = set(self.state_send)
         nk_set = set(new_state)
 
         existing_keys = sk_set | (sk_set & nk_set)
-        self.state |= {k: v
-                       for k, v in new_state.items()
-                       if k in existing_keys}
+        self.state_send |= {k: v for k, v in new_state.items() if k in existing_keys}
         self.update_motor_from_state(self.motor_send, self.state_send)
         # Update motor_send.{hex_len,motor_send_data}
         self.cdll.modify_data(Types.byref(self.motor_send))

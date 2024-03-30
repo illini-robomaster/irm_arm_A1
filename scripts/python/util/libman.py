@@ -55,7 +55,7 @@ def get_so_path():
             tup = ('Linux', '32')
         # aarch32/64
         elif machine.startswith('aarch'):
-            tup = ('ARM', machine[:-2])
+            tup = ("ARM", machine[-2:])
         # Likely unsupported
         else:
             raise RuntimeError(f'{machine} not supported.')
