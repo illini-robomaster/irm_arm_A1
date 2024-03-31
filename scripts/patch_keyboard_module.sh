@@ -50,6 +50,12 @@ fi
 
 NOT_OKAY=
 echo Check permissions:
+if [ groups ${USER} | grep -q tty ]; then
+    echo OK: ${USER} is in group tty for \`dumpkeys\`
+else
+    echo NOT OK: ${USER} IS NOT IN GROUP tty FOR \`dumpkeys\`
+    NOT_OKAY=1
+fi
 for event in $(ls -dh /dev/input/event*); do
     event_group=$(stat -c %G ${event}) 
     if [ "${event_group}" == root ]; then
